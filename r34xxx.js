@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34 Layout Customizer
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.1.6
 // @description  Customize the layout of Rule34 post pages
 // @author       You
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
