@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rule34 Layout Customizer
 // @namespace    http://tampermonkey.net/
-// @version      0.1.6
+// @version      0.1.7
 // @description  Customize the layout of Rule34 post pages
 // @author       You
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
@@ -127,51 +127,51 @@
 		// media_section.style.maxHeight = `${window.innerHeight - offset}px`;
 	// }
 
-	// Move existing content to the new sections
-	function move_content_to_new_layout() {
-		// Get the existing content elements by their current IDs or classes
-		const existing_media = document.getElementById('existing-media-id'); // Replace with actual selector
-		const existing_comments = document.getElementById('existing-comments-id'); // Replace with actual selector
-		const existing_metadata = document.getElementById('existing-metadata-id'); // Replace with actual selector
+	// // Move existing content to the new sections
+	// function move_content_to_new_layout() {
+	// 	// Get the existing content elements by their current IDs or classes
+	// 	const existing_media = document.getElementById('existing-media-id'); // Replace with actual selector
+	// 	const existing_comments = document.getElementById('existing-comments-id'); // Replace with actual selector
+	// 	const existing_metadata = document.getElementById('existing-metadata-id'); // Replace with actual selector
 
-		// Append existing content to the custom sections
-		const media_section = document.getElementById('custom-media-section');
-		const comments_section = document.getElementById('custom-comments-section');
-		const metadata_section = document.getElementById('custom-metadata-section');
+	// 	// Append existing content to the custom sections
+	// 	const media_section = document.getElementById('custom-media-section');
+	// 	const comments_section = document.getElementById('custom-comments-section');
+	// 	const metadata_section = document.getElementById('custom-metadata-section');
 
-		if (existing_media) media_section.appendChild(existing_media);
-		if (existing_comments) comments_section.appendChild(existing_comments);
-		if (existing_metadata) metadata_section.appendChild(existing_metadata);
-	}
+	// 	if (existing_media) media_section.appendChild(existing_media);
+	// 	if (existing_comments) comments_section.appendChild(existing_comments);
+	// 	if (existing_metadata) metadata_section.appendChild(existing_metadata);
+	// }
 
-	// When the DOM is fully loaded, move the content and set up the initial resize
-	document.addEventListener('DOMContentLoaded', function () {
-		move_content_to_new_layout();
-		resize_image();
-	});
+	// // When the DOM is fully loaded, move the content and set up the initial resize
+	// document.addEventListener('DOMContentLoaded', function () {
+	// 	move_content_to_new_layout();
+	// 	resize_image();
+	// });
 
-	// Set up listeners for window resize
-	window.addEventListener('resize', resize_image);
+	// // Set up listeners for window resize
+	// window.addEventListener('resize', resize_image);
 
 
-	// Apply custom styles via GM_addStyle
-	GM_addStyle(`
-		/* Add styles for the image container if necessary */
-		#image-container {
-			display: block; /* or 'flex', 'inline-block', etc., depending on your layout */
-			overflow: hidden; /* Ensure that the image doesn't overflow its container */
-			margin-right: auto; /* Center align the container if you want */
-			margin-left: auto; /* Center align the container if you want */
-		}
-		#image {
-			display: block; /* Ensures the image doesn't inline display which could add unwanted space */
-			max-width: 100%; /* Limits image width to not exceed its container */
-			height: auto; /* Maintains aspect ratio */
-		}
-	`);
+	// // Apply custom styles via GM_addStyle
+	// GM_addStyle(`
+	// 	/* Add styles for the image container if necessary */
+	// 	#image-container {
+	// 		display: block; /* or 'flex', 'inline-block', etc., depending on your layout */
+	// 		overflow: hidden; /* Ensure that the image doesn't overflow its container */
+	// 		margin-right: auto; /* Center align the container if you want */
+	// 		margin-left: auto; /* Center align the container if you want */
+	// 	}
+	// 	#image {
+	// 		display: block; /* Ensures the image doesn't inline display which could add unwanted space */
+	// 		max-width: 100%; /* Limits image width to not exceed its container */
+	// 		height: auto; /* Maintains aspect ratio */
+	// 	}
+	// `);
 
 	// Call resize_image on window load and resize
 	window.addEventListener('load', resize_image);
-	//window.addEventListener('resize', resize_image);
+	window.addEventListener('resize', resize_image);
 
 })();
