@@ -7,10 +7,11 @@
 // @match        https://rule34.xxx/index.php?page=post&s=view&id=*
 // @icon         https://www.google.com/s2/favicons?sz=256&domain=rule34.xxx
 // @grant        GM_addStyle
+// @updateURL    https://raw.githubusercontent.com/nanojin/tokenmonkey/master/r34xxx.js
 // ==/UserScript==
 
-(function() {
-		'use strict';
+(function () {
+	'use strict';
 
 	// Creating the main container and sections
 	const main_container = document.createElement('div');
@@ -52,56 +53,79 @@
 
 	// Apply initial styles for the layout
 	GM_addStyle(`
+	#custom-layout-container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: flex-start; /* Align items at the top of the container */
+	}
+	#custom-media-section, #custom-comments-section {
+		flex-basis: calc(80% - 10px); /* Adjust the width minus the gap */
+		max-width: calc(80% - 10px); /* Adjust the width minus the gap */
+		margin-bottom: 10px; /* Spacing between sections */
+	}
+	#custom-comments-section {
+		flex-basis: 20%;
+		max-width: 20%;
+		margin-left: auto; /* Push the comments to the right */
+	}
+	#custom-metadata-section {
+		width: 100%;
+	}
+	/* Media queries for responsiveness */
+	@media (max-width: 800px) {
 		#custom-layout-container {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: space-between;
+			flex-direction: column;
 		}
-		#custom-media-section {
-			flex: 1;
-			min-width: 300px; /* Minimum width before switching to vertical layout */
+		#custom-media-section, #custom-comments-section {
+			flex-basis: 100%;
+			max-width: 100%;
 		}
-		#custom-comments-section {
-			flex: 1;
-			max-width: 20%; /* Adjust based on preference */
-		}
-		#custom-metadata-section {
-			width: 100%; /* Full width on horizontal layout */
-		}
-		/* Media queries for responsiveness */
-		@media (max-width: 800px) { /* Adjust the max-width as needed for the switch point */
-			#custom-layout-container {
-				flex-direction: column;
-			}
-			#custom-comments-section,
-			#custom-metadata-section {
-				max-width: 100%;
-				order: 2; /* This will put the comments right below the media on smaller screens */
-			}
-			#custom-metadata-section {
-				order: 3; /* Metadata comes last */
-			}
-		}
+	}
 	`);
 
 	// Function to handle the dynamic resizing of the image
 	function resize_image() {
-	// Assuming the media (image or video) is inside the #custom-media-section
-	const media_section = document.getElementById('custom-media-section');
-	const image = media_section.querySelector('img'); // or the appropriate selector for the media
-	const comment_section_width = window.innerWidth * 0.20; // 20% width reserved for comments
-	const image_max_width = window.innerWidth - comment_section_width;
+		const media_section = document.getElementById('custom-media-section');
+		
+		// Try to select a video element first; if none is found, select an image
+		const media = media_section.querySelector('video') || media_section.querySelector('img');
 
-	media_section.style.width = `${image_max_width}px`; // Set the media section width
-	if (image) {
-		image.style.width = '100%'; // Make media width 100% of the container
-		image.style.height = 'auto'; // Set media height to auto to maintain aspect ratio
+		// Determine the width available for the media, considering the comments section
+		const windowWidth = window.innerWidth;
+		const commentSectionWidth = 768 < windowWidth ? windowWidth * 0.2 : 0; // Adjust based on your media query breakpoint
+		// const commentSectionWidth = Math.max(768, windowWidth) * 0.2; // Adjust based on your media query breakpoint
+		const mediaAvailableWidth = windowWidth - commentSectionWidth;
+	
+		// Dynamically adjust the size of the media
+		if (media) {
+			media.style.width = '100%'; // Use 100% of the media section width
+			media.style.maxWidth = `${mediaAvailableWidth}px`; // Ensure it doesn't exceed the available width
+			media.style.height = 'auto'; // Maintain aspect ratio
+	
+			// Special handling for videos to ensure they are responsive
+			if (media.tagName === 'VIDEO') {
+				media.style.maxHeight = '100%'; // Limit video height to prevent overflow
+			}
+		}
 	}
+	
+		// const media_section = document.getElementById('custom-media-section');
+		// const media = /* Insert initialization code here */ // If a video is found, select for video, else select for an image (only two possible types)
+		// const image_container = media_section; // The media section is the container
+		// const comment_section_width = window.innerWidth * 0.20; // 20% width reserved for comments
+		// const image_max_width = window.innerWidth - comment_section_width;
 
-	// Adjust the max height of the media to be no taller than the window height, minus any offsets (like a header or padding)
-	const offset = 100; // Change this value to account for any fixed headers or footers
-	media_section.style.maxHeight = `${window.innerHeight - offset}px`;
-	}
+		// media_section.style.width = `${image_max_width}px`; // Set the media section width
+		// if (image) {
+		// 	image.style.width = '100%'; // Make media width 100% of the container
+		// 	image.style.height = 'auto'; // Set media height to auto to maintain aspect ratio
+		// }
+
+		// // Adjust the max height of the media to be no taller than the window height, minus any offsets (like a header or padding)
+		// const offset = 100; // Change this value to account for any fixed headers or footers
+		// media_section.style.maxHeight = `${window.innerHeight - offset}px`;
+	// }
 
 	// Move existing content to the new sections
 	function move_content_to_new_layout() {
@@ -109,19 +133,19 @@
 		const existing_media = document.getElementById('existing-media-id'); // Replace with actual selector
 		const existing_comments = document.getElementById('existing-comments-id'); // Replace with actual selector
 		const existing_metadata = document.getElementById('existing-metadata-id'); // Replace with actual selector
-	
+
 		// Append existing content to the custom sections
 		const media_section = document.getElementById('custom-media-section');
 		const comments_section = document.getElementById('custom-comments-section');
 		const metadata_section = document.getElementById('custom-metadata-section');
-	
+
 		if (existing_media) media_section.appendChild(existing_media);
 		if (existing_comments) comments_section.appendChild(existing_comments);
 		if (existing_metadata) metadata_section.appendChild(existing_metadata);
 	}
 
 	// When the DOM is fully loaded, move the content and set up the initial resize
-	document.addEventListener('DOMContentLoaded', function() {
+	document.addEventListener('DOMContentLoaded', function () {
 		move_content_to_new_layout();
 		resize_image();
 	});
